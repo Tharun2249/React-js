@@ -1,0 +1,211 @@
+import React from "react";
+import { Col, Image, Row } from "react-bootstrap";
+
+export default function Footer(){
+    return(
+      <nav className="  navbar  navbar-expand-lg bg-success   text-white  w-100 " style={{bottom:0}}>
+        <Row className= "w-100 mx-0 ">
+        <Col md={2}>
+          <Image src='sunlife-logo.png' alt='sunlife' width={150} />
+        </Col>
+        <Col md={10} className="text-end ">
+          <Row>
+            <Col className="text-end">
+            <p>
+            <span>Legal</span>
+            <span className="mx-2">|</span>
+            <span>Privacy</span>
+            <span className="mx-2">|</span>
+            <span>Security</span>
+            <span className="mx-2">|</span>
+            <span>Sitemap</span>
+            <span className="mx-2">|</span>
+            <span>Feedback</span>
+          </p>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="text-end">
+              <p>Sun Life Assurance Company of Canada. All rights are reserved</p>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      </nav>
+      
+    )
+}
+
+
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Toast, Container, Modal, Form } from 'react-bootstrap';
+import axios from 'axios';
+import Header from './Header';
+import Footer from './Footer';
+
+const Dashboard = () => {
+  const [users, setUsers] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+
+  useEffect(() => {
+    axios.get('https://jsonplaceholder.typicode.com/users')
+      .then(response => setUsers(response.data))
+      .catch(error => console.error('Error fetching users:', error));
+  }, []);
+
+  const handleEdit = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+  const handleDelete = (user) => {
+    setSelectedUser(user);
+    setShowToast(true);
+  };
+
+  const confirmDelete = () => {
+    setUsers(users.filter(user => user.id !== selectedUser.id));
+    setShowToast(false);
+  };
+
+  const handleEditChange = (e) => {
+    setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value });
+  };
+
+  const saveChanges = () => {
+    setUsers(users.map(user => (user.id === selectedUser.id ? selectedUser : user)));
+    setShowModal(false);
+  };
+
+  return (
+    <Container fluid >
+      <Header/>
+      
+      {/* Main Content */}
+      <Container className='my-5 p-4 bg-light border rounded shadow'>
+        <h1 className="text-center my-4 text-primary">User Dashboard</h1>
+
+        <Table striped bordered hover responsive className="table-light table-hover shadow-sm">
+          <thead className="table-primary">
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Website</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.phone}</td>
+                <td>{user.website}</td>
+                <td>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(user)}>Edit</Button>
+                  <Button variant="danger" onClick={() => handleDelete(user)}>Delete</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        {/* Toast for Deletion Confirmation */}
+        <Toast show={showToast} onClose={() => setShowToast(false)} style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          zIndex: 9999,
+          backgroundColor: '#f8d7da',
+        }}>
+          <Toast.Header>
+            <strong className="me-auto">Confirm Deletion</strong>
+          </Toast.Header>
+          <Toast.Body>
+            Are you sure you want to delete <strong>{selectedUser.name}</strong>?
+            <div className="mt-2">
+              <Button variant="secondary" onClick={() => setShowToast(false)}>No</Button>{' '}
+              <Button variant="danger" onClick={confirmDelete}>Yes</Button>
+            </div>
+          </Toast.Body>
+        </Toast>
+
+        {/* Modal for Editing User */}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit User</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={selectedUser.name || ""}
+                  onChange={handleEditChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Username</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="username"
+                  value={selectedUser.username || ""}
+                  onChange={handleEditChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={selectedUser.email || ""}
+                  onChange={handleEditChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="phone"
+                  value={selectedUser.phone || ""}
+                  onChange={handleEditChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Website</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="website"
+                  value={selectedUser.website || ""}
+                  onChange={handleEditChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={saveChanges}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+      
+      
+      <Footer />
+      
+    </Container>
+  );
+};
+
+export default Dashboard;
+
