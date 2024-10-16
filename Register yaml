@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: User Registration API
+  description: API for registering a user via a registration form
+  version: 1.0.0
+servers:
+  - url: https://example.com/api
+
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      description: Submit user registration details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "John"
+                lastName:
+                  type: string
+                  example: "Doe"
+                userName:
+                  type: string
+                  example: "johndoe"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+                department:
+                  type: string
+                  enum: [Technology, Engineering, Operations]
+                  example: "Technology"
+                gender:
+                  type: string
+                  enum: [Male, Female]
+                  example: "Male"
+              required:
+                - firstName
+                - lastName
+                - userName
+                - password
+                - department
+                - gender
+      responses:
+        '200':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Registration successful!"
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "First Name is required!"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First name of the user
+        lastName:
+          type: string
+          description: Last name of the user
+        userName:
+          type: string
+          description: Username chosen by the user
+        password:
+          type: string
+          description: User's password (hashed)
+        department:
+          type: string
+          enum:
+            - Technology
+            - Engineering
+            - Operations
+        gender:
+          type: string
+          enum:
+            - Male
+            - Female
+      required:
+        - firstName
+        - lastName
+        - userName
+        - password
+        - department
+        - gender
