@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: User Dashboard API
+  version: 1.0.0
+  description: API for managing users in the User Dashboard.
+
+servers:
+  - url: https://jsonplaceholder.typicode.com
+
+paths:
+  /users:
+    get:
+      summary: Retrieve all users
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal server error
+    post:
+      summary: Add a new user
+      operationId: addUser
+      tags:
+        - Users
+      requestBody:
+        description: New user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      operationId: getUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    put:
+      summary: Update a user by ID
+      operationId: updateUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: User not found
+    delete:
+      summary: Delete a user by ID
+      operationId: deleteUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        username:
+          type: string
+          description: User's username
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: User's phone number
+        website:
+          type: string
+          description: User's website
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              description: Street address
+            suite:
+              type: string
+              description: Suite or apartment number
+            city:
+              type: string
+              description: City
+            zipcode:
+              type: string
+              description: Postal code
+            geo:
+              type: object
+              properties:
+                lat:
+                  type: string
+                  description: Latitude
+                lng:
+                  type: string
+                  description: Longitude
+          required:
+            - street
+            - suite
+            - city
+            - zipcode
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Company name
+            catchPhrase:
+              type: string
+              description: Company catchphrase
+            bs:
+              type: string
+              description: Business slogan
+          required:
+            - name
+            - catchPhrase
+            - bs
+      required:
+        - id
+        - name
+        - username
+        - email
+        - phone
+        - website
+        - address
+        - company
